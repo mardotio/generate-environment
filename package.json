@@ -1,6 +1,6 @@
 {
   "name": "@mardotio/generate-environment",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": "mardotio",
   "description": "Verifies specified environment variables are set",
   "license": "MIT",
@@ -9,7 +9,7 @@
   "files": ["lib/**/*"],
   "repository": "https://github.com/mardotio/generate-environment",
   "scripts": {
-    "build": "tsc",
+    "prepare": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
