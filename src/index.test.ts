@@ -1,27 +1,26 @@
 import generateEnvironment from './index';
 
 describe('generateEnvironment', () => {
-  const env = process.env;
+  const { env } = process;
 
-  const mockProcess = <K extends string>(vars: readonly K[]) => {
-    return vars.reduce((record, k, i) => {
+  const mockProcess = <K extends string>(vars: readonly K[]) =>
+    vars.reduce((record, k, i) => {
       process.env[k] = `${k}_${i}`;
       return {
         ...record,
         [k]: `${k}_${i}`,
       };
     }, {} as Record<K, string>);
-  };
 
   beforeEach(() => {
-    jest.resetModules()
+    jest.resetModules();
     jest.resetAllMocks();
     process.env = { ...env };
-  })
+  });
 
   afterEach(() => {
     process.env = env;
-  })
+  });
 
   it('should return required environment variables', () => {
     const requiredEnv = ['HELLO', 'WORLD'] as const;
@@ -86,7 +85,10 @@ describe('generateEnvironment', () => {
     const values = mockProcess(requiredEnv);
     process.env.FOO = 'FOO1';
 
-    const result = generateEnvironment({ required: requiredEnv, optional: optionaEnv });
+    const result = generateEnvironment({
+      required: requiredEnv,
+      optional: optionaEnv,
+    });
 
     expect(result.errors).toBeNull();
     expect(result.environment?.HELLO).toEqual(values.HELLO);

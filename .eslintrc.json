@@ -1,0 +1,47 @@
+{
+  "globals": {
+    "document": false
+  },
+  "env": {
+    "jest": true
+  },
+  "parser": "@typescript-eslint/parser",
+  "extends": ["airbnb-base", "prettier"],
+  "ignorePatterns": ["lib/*", "node_modules/*"],
+  "plugins": ["prettier", "@typescript-eslint/eslint-plugin"],
+  "rules": {
+    "import/extensions": "off",
+    "@typescript-eslint/no-explicit-any": "error",
+    "prettier/prettier": "error",
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        "devDependencies": [
+          "**/*.test.tsx",
+          "**/*.spec.tsx",
+          "**/*.test.ts",
+          "**/*.spec.ts",
+          "**/setupTests.ts",
+          "webpack/*"
+        ]
+      }
+    ],
+    "no-use-before-define": "off",
+    "@typescript-eslint/no-use-before-define": ["error"],
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      { "ignoreRestSiblings": true }
+    ]
+  },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".ts"]
+      },
+      "typescript": {
+        "project": ["tsconfig.json"]
+      }
+    }
+  }
+}
