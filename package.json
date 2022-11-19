@@ -1,6 +1,6 @@
 {
   "name": "@mardotio/generate-environment",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "mardotio",
   "description": "Verifies specified environment variables are set",
   "license": "MIT",
