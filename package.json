@@ -11,9 +11,10 @@
   ],
   "repository": "https://github.com/mardotio/generate-environment",
   "scripts": {
-    "prepare": "tsc",
     "test": "jest",
-    "lint": "eslint --ext .js --ext .ts src"
+    "lint": "eslint --ext .js --ext .ts src",
+    "build": "tsc",
+    "prepublishOnly": "tsc"
   },
   "jest": {
     "collectCoverageFrom": [
