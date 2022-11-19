@@ -1,0 +1,26 @@
+name: Pull request
+on:
+  pull_request:
+    branches:
+      - master
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+          registry-url: 'https://registry.npmjs.org'
+      - name: Install dependencies
+        run: npm i
+      - name: Check packages are locked
+        run: |
+          if [[ `git status package-lock.json --porcelain` ]]; then
+            echo 'ERROR: Run "npm i" locally to update package-lock.json'
+            exit 1
+          fi
+      - name: Lint code
+        run: npm run lint
+      - name: Test package
+        run: npm run test

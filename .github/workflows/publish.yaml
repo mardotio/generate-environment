@@ -1,18 +1,67 @@
 name: Publish Package to npmjs
 on:
   push:
-    tags:
-      - '*'
+    branches:
+      - master
+    paths:
+      - package.json
+      - package-lock.json
+  workflow_dispatch:
 jobs:
-  build:
+  check-version:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get-version.outputs.PACKAGE_VERSION }}
+      is-published: ${{ steps.is-published.outputs.STATUS }}
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: master
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+      - name: Get package version
+        id: get-version
+        run: |
+          packageversion=`node -e "console.log(require('./package.json').version)"`
+          echo "PACKAGE_VERSION=${packageversion}" >> $GITHUB_OUTPUT
+      - name: Check if version is published
+        id: is-published
+        run: |
+          if [[ `npm view @mardotio/generate-environment@${{ steps.get-version.outputs.PACKAGE_VERSION }} _id | grep @mardotio/generate-environment@${{ steps.get-version.outputs.PACKAGE_VERSION }}` ]]; then
+            echo STATUS=true >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          echo STATUS=false >> $GITHUB_OUTPUT
+  publish:
+    runs-on: ubuntu-latest
+    needs: check-version
+    if: needs.check-version.outputs.is-published == 'false'
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: master
       - uses: actions/setup-node@v3
         with:
           node-version: '16.x'
           registry-url: 'https://registry.npmjs.org'
-      - run: npm ci
-      - run: npm publish --access public
+      - name: Install dependencies
+        run: npm i
+      - name: Check packages are locked
+        run: |
+          if [[ `git status package-lock.json --porcelain` ]]; then
+            echo 'ERROR: Run "npm i" locally to update package-lock.json'
+            exit 1
+          fi
+      - name: Lint code
+        run: npm run lint
+      - name: Test package
+        run: npm run test
+      - name: Publich to NPM
+        run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Create tag
+        run: |
+          git tag ${{ needs.check-version.outputs.version }}
+          git push origin ${{ needs.check-version.outputs.version }}
